@@ -39,6 +39,7 @@ bool VideoLoader::nextFrame() {
 
 int VideoLoader::displayVideoProperties() {
   // detect video properties
+  ROS_INFO_STREAM("\t Using OpenCV version: " << cv::getVersionString());
   ROS_INFO_STREAM("\t Width: " << capture_.get(cv::CAP_PROP_FRAME_WIDTH));
   ROS_INFO_STREAM("\t Height: " << capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
   ROS_INFO_STREAM("\t FourCC: " << capture_.get(cv::CAP_PROP_FOURCC));
