@@ -167,7 +167,6 @@ add_executable(video_save_node node/video_save_node.cpp)
 ## Specify libraries to link a library or executable target against
 target_link_libraries(object_detector PUBLIC
   ${Boost_LIBRARIES}
-  stdc++fs  # for std::experimental::filesystem
 )
 target_link_libraries(video_loader
   ${catkin_LIBRARIES}
