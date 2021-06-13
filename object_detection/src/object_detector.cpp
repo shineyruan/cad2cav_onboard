@@ -4,11 +4,11 @@
 
 #include <boost/program_options/parsers.hpp>
 #include <boost/program_options/variables_map.hpp>
-#include <experimental/filesystem>
 #include <fstream>
 #include <object_detection/object_detector.hpp>
+#include <opencv2/core/utils/filesystem.hpp>
 
-namespace fs = std::experimental::filesystem;
+namespace fs = cv::utils::fs;
 
 namespace object_detection {
 
@@ -71,17 +71,17 @@ ObjectDetector::ObjectDetector(const std::string model_path, DNNType dnn_type,
 }
 
 void ObjectDetector::loadDatasetClassNames() {
-  fs::path package_dir = ros::package::getPath("object_detection");
-  fs::path label_path;
+  cv::String package_dir = ros::package::getPath("object_detection");
+  cv::String label_path;
 
   if (dataset_type_ == DatasetType::COCO) {
-    label_path = package_dir / "models/coco.names";
+    label_path = fs::join(package_dir, "models/coco.names");
   } else {
     ROS_ERROR_STREAM("Dataset type has not been supported");
     throw ros::Exception("Dataset type has not been supported");
   }
 
-  std::ifstream label_file(label_path.string(), std::ios::in);
+  std::ifstream label_file(label_path, std::ios::in);
   if (label_file.is_open()) {
     std::string label;
     while (std::getline(label_file, label)) {
