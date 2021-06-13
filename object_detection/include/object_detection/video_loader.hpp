@@ -15,6 +15,7 @@
 
 #include <ros/console.h>
 
+#include <chrono>
 #include <object_detection/object_detector.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/utility.hpp>
@@ -53,6 +54,11 @@ public:
   bool nextFrame();
 
   /**
+   * @brief Saves the current frame to disk through cv::VideoWriter
+   */
+  void saveFrame();
+
+  /**
    * @brief Visualizes current frame using cv::imshow()
    */
   void visualize();
@@ -66,6 +72,7 @@ public:
 
 private:
   cv::VideoCapture capture_;
+  cv::VideoWriter writer_;
   int num_frames_;
   cv::Mat current_frame_;
   int frame_idx_;

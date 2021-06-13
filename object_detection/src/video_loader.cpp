@@ -1,4 +1,7 @@
 #include <object_detection/video_loader.hpp>
+#include <opencv2/core/utils/filesystem.hpp>
+
+using namespace std::chrono;
 
 namespace object_detection {
 
@@ -22,6 +25,18 @@ VideoLoader::VideoLoader(const std::string video_path, bool use_webcam)
   }
 
   num_frames_ = capture_.isOpened() ? displayVideoProperties() : -1;
+
+  // for video saving
+  auto now        = system_clock::now();
+  int file_suffix = static_cast<int>(system_clock::to_time_t(now));
+  int codec       = cv::VideoWriter::fourcc(frame_fourcc_[0], frame_fourcc_[1],
+                                      frame_fourcc_[2], frame_fourcc_[3]);
+  std::string write_dir = "video_out";
+  if (!cv::utils::fs::exists(write_dir))
+    cv::utils::fs::createDirectory(write_dir);
+  writer_ = cv::VideoWriter(
+      cv::format("%s/video-%d.mp4", write_dir.c_str(), file_suffix), codec,
+      frame_fps_, cv::Size(frame_width_, frame_height_));
 }
 
 const cv::Mat& VideoLoader::getFrame() const { return current_frame_; }
@@ -36,6 +51,8 @@ bool VideoLoader::nextFrame() {
 
   return false;
 }
+
+void VideoLoader::saveFrame() { writer_.write(current_frame_); }
 
 int VideoLoader::displayVideoProperties() {
   int num_frames = capture_.get(cv::CAP_PROP_FRAME_COUNT);
@@ -52,7 +69,7 @@ int VideoLoader::displayVideoProperties() {
     frame_fourcc_ = cv::format("%c%c%c%c", fourcc & 255, (fourcc >> 8) & 255,
                                (fourcc >> 16) & 255, (fourcc >> 24) & 255);
   } else {
-    frame_fourcc_ = "H264";
+    frame_fourcc_ = "mp4v";
   }
 
   ROS_INFO_STREAM("\t Width: " << frame_width_);
