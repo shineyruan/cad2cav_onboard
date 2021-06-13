@@ -1,6 +1,18 @@
 #ifndef __OBJECT_DETECTION_VIDEO_LOADER_HPP__
 #define __OBJECT_DETECTION_VIDEO_LOADER_HPP__
 
+/**
+ * @file video_loader.hpp
+ * @author Zhihao Ruan (ruanzh@seas.upenn.edu)
+ *
+ * @brief Video loader is responsible for all interactions with disk videos &
+ * webcams video streams, including loading a video from disk, detecting
+ * webcams, and saving videos to disk.
+ *
+ * @date 2021-06-13
+ * @copyright Copyright (c) 2021
+ */
+
 #include <ros/console.h>
 
 #include <object_detection/object_detector.hpp>
@@ -58,6 +70,12 @@ private:
   cv::Mat current_frame_;
   int frame_idx_;
   bool manual_termination_;
+
+  // members for storing video properties
+  int frame_width_;
+  int frame_height_;
+  double frame_fps_;
+  std::string frame_fourcc_;
 
   /**
    * @brief Prints the properties of video from VideoCapture info using ROS

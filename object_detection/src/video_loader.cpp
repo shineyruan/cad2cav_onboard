@@ -38,16 +38,29 @@ bool VideoLoader::nextFrame() {
 }
 
 int VideoLoader::displayVideoProperties() {
-  // detect video properties
+  int num_frames = capture_.get(cv::CAP_PROP_FRAME_COUNT);
   ROS_INFO_STREAM("\t Using OpenCV version: " << cv::getVersionString());
-  ROS_INFO_STREAM("\t Width: " << capture_.get(cv::CAP_PROP_FRAME_WIDTH));
-  ROS_INFO_STREAM("\t Height: " << capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
-  ROS_INFO_STREAM("\t FourCC: " << capture_.get(cv::CAP_PROP_FOURCC));
-  ROS_INFO_STREAM("\t Frame rate: " << capture_.get(cv::CAP_PROP_FPS));
-  ROS_INFO_STREAM(
-      "\t Number of Frames: " << capture_.get(cv::CAP_PROP_FRAME_COUNT));
+  ROS_INFO_STREAM("\t Number of Frames: " << num_frames);
 
-  return capture_.get(cv::CAP_PROP_FRAME_COUNT);
+  // detect video properties
+  frame_width_  = static_cast<int>(capture_.get(cv::CAP_PROP_FRAME_WIDTH));
+  frame_height_ = static_cast<int>(capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
+  frame_fps_    = capture_.get(cv::CAP_PROP_FPS);
+
+  if (num_frames > 0) {
+    int fourcc    = capture_.get(cv::CAP_PROP_FOURCC);
+    frame_fourcc_ = cv::format("%c%c%c%c", fourcc & 255, (fourcc >> 8) & 255,
+                               (fourcc >> 16) & 255, (fourcc >> 24) & 255);
+  } else {
+    frame_fourcc_ = "H264";
+  }
+
+  ROS_INFO_STREAM("\t Width: " << frame_width_);
+  ROS_INFO_STREAM("\t Height: " << frame_height_);
+  ROS_INFO_STREAM("\t FourCC: " << frame_fourcc_);
+  ROS_INFO_STREAM("\t Frame rate: " << frame_fps_);
+
+  return num_frames;
 }
 
 void VideoLoader::visualize() {
