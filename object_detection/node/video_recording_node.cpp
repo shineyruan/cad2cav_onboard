@@ -17,7 +17,7 @@ void onShutDown(int sig) {
 }
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "video_save_node");
+  ros::init(argc, argv, "video_recording_node");
 
   // OpenCV command line parser
   cv::CommandLineParser parser(argc, argv, KEYS);
