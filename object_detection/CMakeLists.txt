@@ -152,7 +152,7 @@ add_library(fps
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node node/object_detection_node.cpp)
-add_executable(video_save_node node/video_save_node.cpp)
+add_executable(video_recording_node node/video_recording_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -177,7 +177,7 @@ target_link_libraries(${PROJECT_NAME}_node
   video_loader
   fps
 )
-target_link_libraries(video_save_node
+target_link_libraries(video_recording_node
   video_loader
   fps
 )
@@ -200,7 +200,7 @@ target_link_libraries(video_save_node
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
   ${PROJECT_NAME}_node
-  video_save_node
+  video_recording_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
