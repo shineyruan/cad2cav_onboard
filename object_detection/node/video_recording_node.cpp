@@ -11,7 +11,7 @@ static const cv::String KEYS =
     "{visualize     | | whether to visualize each frame in window       }";
 
 bool termination = false;
-void shutDown(int sig) {
+void onShutDown(int sig) {
   termination = true;
   ros::shutdown();
 }
@@ -48,16 +48,12 @@ int main(int argc, char **argv) {
   object_detection::FPS fps_counter;
   fps_counter.start();
 
-  // register SIGINT callback when visualization is not enabled...
-  if (!viz_enable) {
-    signal(SIGINT, shutDown);
-    ROS_WARN(
-        "Visualization is not enabled. Use Ctrl-C to terminate loop properly.");
-  } else {
-    ROS_WARN(
-        "Visualization is enabled. Use q to terminate video recording "
-        "properly");
-  }
+  ROS_WARN_STREAM(
+      "Use Ctrl-C to terminate when visualization is not enabled; use q or Q "
+      "when visualization is enabled");
+
+  // register SIGINT callback
+  signal(SIGINT, onShutDown);
 
   while (video_loader.nextFrame() && !termination) {
     if (viz_enable) video_loader.visualize();
