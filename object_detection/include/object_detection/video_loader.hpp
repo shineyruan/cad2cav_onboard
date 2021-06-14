@@ -59,6 +59,14 @@ public:
   void saveFrame();
 
   /**
+   * @brief Saves a frame to video specified at input
+   *
+   * @param frame:  the frame to save
+   *                (usually with detection bounding boxes)
+   */
+  void saveFrame(const cv::Mat& frame);
+
+  /**
    * @brief Visualizes current frame using cv::imshow()
    */
   void visualize();

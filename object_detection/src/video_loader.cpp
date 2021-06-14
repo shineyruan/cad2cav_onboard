@@ -54,6 +54,8 @@ bool VideoLoader::nextFrame() {
 
 void VideoLoader::saveFrame() { writer_.write(current_frame_); }
 
+void VideoLoader::saveFrame(const cv::Mat& frame) { writer_.write(frame); }
+
 int VideoLoader::displayVideoProperties() {
   int num_frames = capture_.get(cv::CAP_PROP_FRAME_COUNT);
   ROS_INFO_STREAM("\t Using OpenCV version: " << cv::getVersionString());
