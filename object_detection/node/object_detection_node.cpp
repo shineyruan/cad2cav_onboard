@@ -9,7 +9,8 @@
 static const cv::String KEYS =
     "{help h usage ?| | print this message                              }"
     "{video v       | | video specified for tracking. Default: webcam   }"
-    "{model m       | | deep learning model type for object detection   }";
+    "{model m       | | deep learning model type for object detection   }"
+    "{save s        | | whether to save video to disk                   }";
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "object_detection_node");
@@ -25,6 +26,7 @@ int main(int argc, char **argv) {
 
   // determine using webcam or video
   bool use_webcam         = !parser.has("video");
+  bool save_video         = parser.has("save");
   unsigned int webcam_idx = 0;
 
   // video source indicator
@@ -61,6 +63,7 @@ int main(int argc, char **argv) {
   while (video_loader.nextFrame()) {
     const auto detection_results = detector.infer(video_loader.getFrame());
     video_loader.visualize(detection_results);
+    if (save_video) video_loader.saveFrame();
     fps_counter.update();
   }
 
