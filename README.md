@@ -47,5 +47,5 @@ rosrun object_detection object_detection_node --model=darknet
 ```
 You can also specify a pre-recorded video to visualize by adding `--video=<PATH_TO_VIDEO>` as a command line argument.
 
-## Introduction
+## Acknowledgements
 **The object detection** part of project uses a pre-trained model of Tiny-YOLO v4 directly from [the author's website.](https://github.com/AlexeyAB/darknet)
