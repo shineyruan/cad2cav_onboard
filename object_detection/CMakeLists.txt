@@ -12,6 +12,9 @@ add_compile_options(-march=native -O0 -ggdb -fno-omit-frame-pointer)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   roslib
+  cv_bridge
+  image_transport
+  sensor_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -115,7 +118,7 @@ endif()
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES video_loader object_detector
- CATKIN_DEPENDS roscpp roslib
+ CATKIN_DEPENDS roscpp roslib cv_bridge image_transport sensor_msgs
 #  DEPENDS system_lib
 )
 
@@ -153,6 +156,7 @@ add_library(fps
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node node/object_detection_node.cpp)
 add_executable(video_recording_node node/video_recording_node.cpp)
+add_executable(image_publish_node node/image_publish_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -181,6 +185,11 @@ target_link_libraries(video_recording_node
   video_loader
   fps
 )
+target_link_libraries(image_publish_node
+  video_loader
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -201,6 +210,7 @@ target_link_libraries(video_recording_node
 install(TARGETS
   ${PROJECT_NAME}_node
   video_recording_node
+  image_publish_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
