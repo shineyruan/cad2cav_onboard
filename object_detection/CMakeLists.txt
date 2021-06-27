@@ -158,6 +158,8 @@ add_executable(${PROJECT_NAME}_node node/object_detection_node.cpp)
 add_executable(video_recording_node node/video_recording_node.cpp)
 add_executable(image_publish_node node/image_publish_node.cpp)
 
+add_executable(image_subscribe_node test/image_subscriber_test.cpp)
+
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
 ## target back to the shorter version for ease of user use
@@ -187,6 +189,10 @@ target_link_libraries(video_recording_node
 )
 target_link_libraries(image_publish_node
   video_loader
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+target_link_libraries(image_subscribe_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )

@@ -1,0 +1,11 @@
+<launch>
+    <node name="image_subscriber_test"
+        pkg="object_detection"
+        type="image_subscribe_node"/>
+
+    <node name="playbag"
+        pkg="rosbag"
+        type="play"
+        args="--clock $(arg bag_filename) --rate $(arg rate)">
+    </node>
+</launch>
