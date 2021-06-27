@@ -1,13 +1,10 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.12)
 project(cv_bridge)
 
 find_package(catkin REQUIRED COMPONENTS rosconsole sensor_msgs)
 find_package(Boost REQUIRED)
 
 set(_opencv_version 4)
-set(PYTHON_NUMPY_INCLUDE_DIR /usr/lib/python3/dist-packages/numpy/core/include)
-set(PYTHON_INCLUDE_PATH /usr/include/python3.6)
-
 find_package(OpenCV 4 QUIET)
 if(NOT OpenCV_FOUND)
   message(STATUS "Did not find OpenCV 4, trying OpenCV 3")

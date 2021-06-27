@@ -12,8 +12,9 @@ install(TARGETS ${PROJECT_NAME}
 
 if(NOT ANDROID)
 # add a Boost Python library
-find_package(PythonInterp REQUIRED)
-find_package(PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+# find_package(PythonInterp REQUIRED)
+# find_package(PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+find_package(Python COMPONENTS Interpreter Development)
 
 #Get the numpy include directory from its python module
 if(NOT PYTHON_NUMPY_INCLUDE_DIR)
