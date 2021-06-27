@@ -21,7 +21,7 @@ sudo apt install libboost-all-dev
 
 Then install other dependencies (OpenCV, TensorRT) manually, by either building from source or following the official documentation.
 ## Installation
-The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson TX2** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
+The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson Xavier** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
 
 ```bash
 mkdir -p ~/catkin_ws/src
