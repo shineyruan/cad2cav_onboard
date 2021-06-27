@@ -36,6 +36,24 @@ if (PYTHON_VERSION_MAJOR VERSION_EQUAL 3)
   add_definitions(-DPYTHON3)
 endif()
 
+
+# Print some message showing some of them
+message("##############################################")
+message(STATUS "OpenCV library status:")
+message(STATUS "    version: ${OpenCV_VERSION}")
+message(STATUS "    libraries: ${OpenCV_LIBRARIES}")
+message(STATUS "    include path: ${OpenCV_INCLUDE_DIRS}")
+message("##############################################")
+ 
+# Print some message showing some of them
+message("##############################################")
+message(STATUS "PYTHON library status:")
+message(STATUS "    PYTHON_VERSION_MAJOR: ${PYTHON_VERSION_MAJOR}")
+message(STATUS "    PYTHON_VERSION_MINOR: ${PYTHON_VERSION_MINOR}")
+message(STATUS "    include path: ${PYTHON_NUMPY_INCLUDE_DIR}")
+message("##############################################")
+
+
 add_library(${PROJECT_NAME}_boost module.cpp module_opencv4.cpp)
 target_link_libraries(${PROJECT_NAME}_boost ${Boost_LIBRARIES}
                                             ${catkin_LIBRARIES}
