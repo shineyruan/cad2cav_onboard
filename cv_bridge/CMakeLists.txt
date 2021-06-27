@@ -15,10 +15,9 @@ if(NOT ANDROID)
   endif()
 else()
 find_package(Boost REQUIRED)
+endif()
 
 set(_opencv_version 4)
-set(PYTHON_NUMPY_INCLUDE_DIR /usr/lib/python3/dist-packages/numpy/core/include)
-
 find_package(OpenCV 4 QUIET)
 if(NOT OpenCV_FOUND)
   message(STATUS "Did not find OpenCV 4, trying OpenCV 3")
