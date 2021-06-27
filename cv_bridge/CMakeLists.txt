@@ -8,7 +8,7 @@ if(NOT ANDROID)
 
   if(PYTHONLIBS_VERSION_STRING VERSION_LESS "3.8")
     # Debian Buster
-    find_package(Boost REQUIRED python37)
+    find_package(Boost REQUIRED python3)
   else()
     # Ubuntu Focal
     find_package(Boost REQUIRED python)
@@ -45,9 +45,6 @@ catkin_python_setup()
 include_directories(include ${Boost_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-if(NOT ANDROID)
-add_subdirectory(python)
-endif()
 add_subdirectory(src)
 if(CATKIN_ENABLE_TESTING)
   add_subdirectory(test)
