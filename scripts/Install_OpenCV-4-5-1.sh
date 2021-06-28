@@ -8,7 +8,7 @@ sudo sh -c "echo '/usr/local/cuda/lib64' >> /etc/ld.so.conf.d/nvidia-tegra.conf"
 sudo ldconfig
 
 # install the dependencies
-sudo apt-get install -y build-essential cmake git unzip pkg-config
+sudo apt-get install -y build-essential cmake git unzip pkg-config stow
 sudo apt-get install -y libjpeg-dev libpng-dev libtiff-dev
 sudo apt-get install -y libavcodec-dev libavformat-dev libswscale-dev
 sudo apt-get install -y libgtk2.0-dev libcanberra-gtk*
@@ -79,7 +79,11 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE \
 # run make
 make -j4
 
+# install
 sudo make install
+cd /usr/local/stow
+sudo stow opencv4-4.5.1
+cd ~
 sudo ldconfig
 
 # cleaning (frees 300 MB)
