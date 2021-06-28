@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
   while (video_loader.nextFrame() && !termination) {
     if (viz_enable) video_loader.visualize();
-    if (save_video) video_loader.saveFrame();
+    if (save_video) video_loader.saveFrameToVideo();
     fps_counter.update();
   }
 

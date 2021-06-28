@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
   while (video_loader.nextFrame()) {
     const auto detection_results = detector.infer(video_loader.getFrame());
     video_loader.visualize(detection_results);
-    if (save_video) video_loader.saveFrame();
+    if (save_video) video_loader.saveFrameToVideo();
     fps_counter.update();
   }
 

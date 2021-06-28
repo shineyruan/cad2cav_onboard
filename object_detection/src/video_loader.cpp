@@ -6,7 +6,7 @@ using namespace std::chrono;
 namespace object_detection {
 
 VideoLoader::VideoLoader(const std::string video_path, bool use_webcam)
-    : frame_idx_(0), manual_termination_(false) {
+    : frame_idx_(0), manual_termination_(false), save_frame_to_file_(false) {
   if (use_webcam) {
     ROS_INFO_STREAM("Using webcam as video source...");
   } else {
@@ -52,9 +52,29 @@ bool VideoLoader::nextFrame() {
   return false;
 }
 
-void VideoLoader::saveFrame() { writer_.write(current_frame_); }
+void VideoLoader::saveFrameToVideo() { writer_.write(current_frame_); }
 
-void VideoLoader::saveFrame(const cv::Mat& frame) { writer_.write(frame); }
+void VideoLoader::saveFrameToVideo(const cv::Mat& frame) {
+  writer_.write(frame);
+}
+
+bool VideoLoader::saveFrameToFile(const std::string file_dir,
+                                  const cv::Mat& frame) {
+  if (!cv::utils::fs::exists(file_dir))
+    cv::utils::fs::createDirectory(file_dir);
+  std::string img_path = cv::format("%s/%d.jpg", file_dir.c_str(), frame_idx_);
+
+  if (save_frame_to_file_) {
+    ROS_INFO_STREAM("Image saving to: " << img_path);
+    save_frame_to_file_ = false;
+    return cv::imwrite(img_path, frame);
+  } else
+    return false;
+}
+
+bool VideoLoader::saveFrameToFile(const std::string file_dir) {
+  return saveFrameToFile(file_dir, current_frame_);
+}
 
 int VideoLoader::displayVideoProperties() {
   int num_frames = capture_.get(cv::CAP_PROP_FRAME_COUNT);
@@ -111,7 +131,8 @@ void VideoLoader::visualize(const cv::Mat& frame) {
 
   cv::imshow("Visualization", frame);
   char ch             = cv::waitKey(30);
-  manual_termination_ = (ch == 'q' || ch == 'Q') ? true : false;
+  manual_termination_ = (ch == 'q' || ch == 'Q');
+  save_frame_to_file_ = (ch == 13 || ch == 's' || ch == 'i');
 }
 
 }  // namespace object_detection

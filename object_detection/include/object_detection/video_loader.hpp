@@ -20,6 +20,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/core/utility.hpp>
 #include <opencv2/highgui/highgui.hpp>  // videoio.hpp included here
+#include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/video/video.hpp>
 
 namespace object_detection {
@@ -56,7 +57,7 @@ public:
   /**
    * @brief Saves the current frame to disk through cv::VideoWriter
    */
-  void saveFrame();
+  void saveFrameToVideo();
 
   /**
    * @brief Saves a frame to video specified at input
@@ -64,7 +65,26 @@ public:
    * @param frame:  the frame to save
    *                (usually with detection bounding boxes)
    */
-  void saveFrame(const cv::Mat& frame);
+  void saveFrameToVideo(const cv::Mat& frame);
+
+  /**
+   * @brief Saves the current frame to disk through cv::imwrite
+   *
+   * Modifies bool save_frame_to_file_
+   *
+   * @param file_dir: image saving directory
+   */
+  bool saveFrameToFile(const std::string file_dir);
+
+  /**
+   * @brief Saves a given frame to disk through cv::imwrite
+   *
+   * Modifies bool save_frame_to_file_
+   *
+   * @param file_dir: image saving directory
+   * @param frame:    image to save
+   */
+  bool saveFrameToFile(const std::string file_dir, const cv::Mat& frame);
 
   /**
    * @brief Visualizes current frame using cv::imshow()
@@ -92,6 +112,7 @@ private:
   cv::Mat current_frame_;
   int frame_idx_;
   bool manual_termination_;
+  bool save_frame_to_file_;
 
   // members for storing video properties
   int frame_width_;
