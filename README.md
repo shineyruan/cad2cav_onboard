@@ -21,7 +21,7 @@ sudo apt install libboost-all-dev
 
 Then install other dependencies (OpenCV, TensorRT) manually, by either building from source or following the official documentation.
 ## Installation
-The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson TX2** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
+The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson Xavier** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
 
 ```bash
 mkdir -p ~/catkin_ws/src
@@ -33,9 +33,9 @@ git clone https://github.com/f1tenth/f1tenth_system.git
 cd ..
 ```
 
-To build the project, run
+To build the project on the car (ROS Melodic), **you have to manually specify Python 3 path for cv_bridge building compliance.** Run:
 ```bash
-catkin_make_isolated --use-ninja
+catkin_make_isolated --use-ninja -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so
 source devel_isolated/setup.bash
 ```
 
