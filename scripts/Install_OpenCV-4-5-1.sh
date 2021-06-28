@@ -43,7 +43,7 @@ cd build
 
 # run cmake
 cmake -D CMAKE_BUILD_TYPE=RELEASE \
--D CMAKE_INSTALL_PREFIX=/usr/local/stow/opencv4/ \
+-D CMAKE_INSTALL_PREFIX=/usr/local/stow/opencv4-4.5.1/ \
 -D OPENCV_EXTRA_MODULES_PATH=~/opencv_contrib-4.5.1/modules \
 -D EIGEN_INCLUDE_PATH=/usr/include/eigen3 \
 -D WITH_OPENCL=OFF \
