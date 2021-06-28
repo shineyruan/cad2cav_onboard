@@ -5,9 +5,10 @@ Welcome to the on-board part of CAD2CAV project. For a detailed project document
 ![](docs/img/automapper.gif)
 
 ## System Requirements
-- Linux Ubuntu (tested on 20.04 LTS and 18.04 LTS)
-- ROS Noetic
-- GCC 8+/Clang 8+ (support for C++17 and std::filesystem)
+- Nvidia Jetson Xavier NX Development Kit (hardware device)
+- Linux Ubuntu 20.04 LTS/18.04 LTS
+- ROS Noetic/Melodic
+- GCC 7+/Clang 7+
 
 ## Software Requirements
 - Boost 1.71
@@ -18,8 +19,14 @@ First run and install the following packages from Ubuntu repository:
 ```bash
 sudo apt install libboost-all-dev
 ```
+Then install OpenCV 4.5.1 on Xavier NX board by running
+```bash
+cd scripts
+sudo ./Install_OpenCV-4-5-1.sh
+```
+***Note.* It might take ~2 hrs to fully install OpenCV 4.5.1 on the device.**
 
-Then install other dependencies (OpenCV, TensorRT) manually, by either building from source or following the official documentation.
+Then install other dependencies manually, by either building from source or following the official documentation.
 ## Installation
 The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson Xavier** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
 
