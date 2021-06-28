@@ -103,4 +103,15 @@ void VideoLoader::visualize(const std::vector<BoundingBox>& bbox_list) {
   visualize();
 }
 
+void VideoLoader::visualize(const cv::Mat& frame) {
+  if (frame.empty()) {
+    ROS_ERROR("Empty frame for display!");
+    return;
+  }
+
+  cv::imshow("Visualization", frame);
+  char ch             = cv::waitKey(30);
+  manual_termination_ = (ch == 'q' || ch == 'Q') ? true : false;
+}
+
 }  // namespace object_detection

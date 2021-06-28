@@ -157,6 +157,7 @@ add_library(fps
 add_executable(${PROJECT_NAME}_node node/object_detection_node.cpp)
 add_executable(video_recording_node node/video_recording_node.cpp)
 add_executable(image_publish_node node/image_publish_node.cpp)
+add_executable(camera_calibration_node node/camera_calibration_node.cpp)
 
 add_executable(image_subscribe_node test/image_subscriber_test.cpp)
 
@@ -172,6 +173,7 @@ add_executable(image_subscribe_node test/image_subscriber_test.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(object_detector PUBLIC
+  ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}
 )
 target_link_libraries(video_loader
@@ -188,6 +190,11 @@ target_link_libraries(video_recording_node
   fps
 )
 target_link_libraries(image_publish_node
+  video_loader
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+)
+target_link_libraries(camera_calibration_node
   video_loader
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
@@ -217,6 +224,8 @@ install(TARGETS
   ${PROJECT_NAME}_node
   video_recording_node
   image_publish_node
+  camera_calibration_node
+  image_subscribe_node
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

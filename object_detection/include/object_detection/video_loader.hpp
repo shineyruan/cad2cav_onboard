@@ -78,6 +78,13 @@ public:
    */
   void visualize(const std::vector<BoundingBox>& bbox_list);
 
+  /**
+   * @brief Visualizes a given frame
+   *
+   * @param frame
+   */
+  void visualize(const cv::Mat& frame);
+
 private:
   cv::VideoCapture capture_;
   cv::VideoWriter writer_;
