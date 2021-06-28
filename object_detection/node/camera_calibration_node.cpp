@@ -11,10 +11,10 @@ int main(int argc, char const *argv[]) {
   constexpr double CHECKBOARD_L = 0.035;  // measured in m
 
   // object points in 3D world space
-  std::vector<std::vector<cv::Point3d>> obj_points;
+  std::vector<std::vector<cv::Point3f>> obj_points;
 
   // define world coordinates for world object points
-  std::vector<cv::Point3d> obj_points_per_checkerboard;
+  std::vector<cv::Point3f> obj_points_per_checkerboard;
   for (int i = 0; i < CHECKBOARD_YMAX; ++i)
     for (int j = 0; j < CHECKBOARD_XMAX; ++j)
       obj_points_per_checkerboard.push_back(
@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     cv::cvtColor(frame, frame_grayscale, cv::COLOR_BGR2GRAY);
 
     // find checkerboard corners
-    std::vector<cv::Point2d> corner_pts;
+    std::vector<cv::Point2f> corner_pts;
     bool success = cv::findChessboardCorners(
         frame_grayscale, cv::Size(CHECKBOARD_XMAX, CHECKBOARD_YMAX), corner_pts,
         cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_FAST_CHECK |
@@ -52,7 +52,7 @@ int main(int argc, char const *argv[]) {
   }
 
   // image points in pixel coordinates
-  std::vector<std::vector<cv::Point2d>> img_points;
+  std::vector<std::vector<cv::Point2f>> img_points;
 
   return 0;
 }
