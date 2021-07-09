@@ -7,6 +7,7 @@
 #include <fstream>
 #include <object_detection/object_detector.hpp>
 #include <opencv2/core/utils/filesystem.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 namespace fs = cv::utils::fs;
 
@@ -167,6 +168,17 @@ std::vector<BoundingBox> ObjectDetector::infer(const cv::Mat& frame) {
   }
 
   return ret;
+}
+
+cv::Mat ObjectDetector::visualizeBBox(
+    const cv::Mat& frame, const std::vector<BoundingBox>& bbox_list) {
+  cv::Mat ret_img = frame;
+  for (const auto& bbox : bbox_list) {
+    cv::putText(ret_img, bbox.class_name, cv::Point(bbox.left, bbox.top),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
+    cv::rectangle(ret_img, bbox.getBBox(), cv::Scalar(0, 0, 255));
+  }
+  return ret_img;
 }
 
 }  // namespace object_detection

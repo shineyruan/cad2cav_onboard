@@ -85,6 +85,16 @@ public:
    */
   std::vector<BoundingBox> infer(const cv::Mat& frame);
 
+  /**
+   * @brief Draws the bounding boxes on the given image.
+   *
+   * @param frame:      image input to draw
+   * @param bbox_list:  list of detected bounding boxes from the image
+   * @return cv::Mat:   image with bounding boxes
+   */
+  static cv::Mat visualizeBBox(const cv::Mat& frame,
+                               const std::vector<BoundingBox>& bbox_list);
+
   // object detection confidence threshold
   static constexpr double CONF_THRESHOLD = 0.4;
   // object detection NMS (Non-Max Suppression) Threshold
