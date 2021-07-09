@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   sensor_msgs
+  cartographer_ros_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -118,7 +119,7 @@ endif()
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES video_loader object_detector
- CATKIN_DEPENDS roscpp roslib cv_bridge image_transport sensor_msgs
+ CATKIN_DEPENDS roscpp roslib cv_bridge image_transport sensor_msgs cartographer_ros_msgs
 #  DEPENDS system_lib
 )
 
