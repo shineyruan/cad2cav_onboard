@@ -1,0 +1,11 @@
+<launch>
+    <node name="object_detection_node"
+        pkg="object_detection"
+        type="object_detection_node"/>
+
+    <node name="playbag"
+        pkg="rosbag"
+        type="play"
+        args="--clock $(arg bag_filename) --rate $(arg rate)">
+    </node>
+</launch>
