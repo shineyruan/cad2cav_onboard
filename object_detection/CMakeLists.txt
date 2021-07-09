@@ -160,6 +160,7 @@ add_executable(image_publish_node node/image_publish_node.cpp)
 add_executable(camera_calibration_node node/camera_calibration_node.cpp)
 
 add_executable(image_subscribe_node test/image_subscriber_test.cpp)
+add_executable(object_detection_test test/object_detection_test.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -203,6 +204,10 @@ target_link_libraries(image_subscribe_node
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
 )
+target_link_libraries(object_detection_test 
+  video_loader
+  fps
+)
 
 #############
 ## Install ##
@@ -226,6 +231,7 @@ install(TARGETS
   image_publish_node
   camera_calibration_node
   image_subscribe_node
+  object_detection_test
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
