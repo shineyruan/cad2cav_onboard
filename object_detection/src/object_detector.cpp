@@ -176,7 +176,7 @@ cv::Mat ObjectDetector::visualizeBBox(
   for (const auto& bbox : bbox_list) {
     cv::putText(ret_img, bbox.class_name, cv::Point(bbox.left, bbox.top),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
-    cv::rectangle(ret_img, bbox.getBBox(), cv::Scalar(0, 0, 255));
+    cv::rectangle(ret_img, bbox.getRect(), cv::Scalar(0, 0, 255));
   }
   return ret_img;
 }

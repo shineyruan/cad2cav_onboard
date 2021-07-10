@@ -117,7 +117,7 @@ void VideoLoader::visualize(const std::vector<BoundingBox>& bbox_list) {
   for (const auto& bbox : bbox_list) {
     cv::putText(current_frame_, bbox.class_name, cv::Point(bbox.left, bbox.top),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
-    cv::rectangle(current_frame_, bbox.getBBox(), cv::Scalar(0, 0, 255));
+    cv::rectangle(current_frame_, bbox.getRect(), cv::Scalar(0, 0, 255));
   }
 
   visualize();

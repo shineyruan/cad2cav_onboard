@@ -43,6 +43,7 @@ struct BoundingBox {
   int class_id{-1};
   std::string class_name;
   double confidence{0.};
+  cv::Point2i centroid;  // pixel coordinates
 
   BoundingBox() = default;
 
@@ -53,9 +54,11 @@ struct BoundingBox {
         height(h),
         class_id(id),
         class_name(name),
-        confidence(conf) {}
+        confidence(conf) {
+    centroid = cv::Point2i(left + width / 2, top + height / 2);
+  }
 
-  cv::Rect getBBox() const { return cv::Rect(left, top, width, height); }
+  cv::Rect getRect() const { return cv::Rect(left, top, width, height); }
 };
 
 class ObjectDetector {
