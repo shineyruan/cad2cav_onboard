@@ -18,8 +18,21 @@ public:
       : n_(ros::NodeHandle()),
         it_(n_),
         current_frame_(),
-        object_detector_(model_path, object_detection::DNNType::DARKNET,
-                         object_detection::DatasetType::COCO, config_path) {
+        object_detector_(DEFAULT_MODEL_PATH, object_detection::DNNType::DARKNET,
+                         object_detection::DatasetType::COCO,
+                         DEFAULT_CONFIG_PATH) {
+    img_sub_ = it_.subscribe("/camera/image_raw", 1,
+                             &ImageReceiver::imageReceiveCallback, this);
+    landmark_pub_ =
+        n_.advertise<cartographer_ros_msgs::LandmarkList>("landmark", 1);
+  }
+
+  ImageReceiver(const std::string model_path, const std::string config_path,
+                DNNType dnn_type, DatasetType dataset_type)
+      : n_(ros::NodeHandle()),
+        it_(n_),
+        current_frame_(),
+        object_detector_(model_path, dnn_type, dataset_type, config_path) {
     img_sub_ = it_.subscribe("/camera/image_raw", 1,
                              &ImageReceiver::imageReceiveCallback, this);
     landmark_pub_ =
@@ -81,10 +94,10 @@ public:
 
 private:
   const cv::String package_dir = ros::package::getPath("object_detection");
-  const cv::String model_path  = cv::utils::fs::join(
+  const cv::String DEFAULT_MODEL_PATH = cv::utils::fs::join(
                        package_dir, "models/yolov4-tiny.weights"),
-                   config_path = cv::utils::fs::join(package_dir,
-                                                     "models/yolov4-tiny.cfg");
+                   DEFAULT_CONFIG_PATH = cv::utils::fs::join(
+                       package_dir, "models/yolov4-tiny.cfg");
 
   ros::NodeHandle n_;
   image_transport::ImageTransport it_;
