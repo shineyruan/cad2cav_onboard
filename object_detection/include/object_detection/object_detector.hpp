@@ -59,6 +59,7 @@ struct BoundingBox {
   }
 
   cv::Rect getRect() const { return cv::Rect(left, top, width, height); }
+  cv::Point2f getCentroid() const { return cv::Point2f(centroid); }
 };
 
 class ObjectDetector {
