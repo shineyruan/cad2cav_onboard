@@ -146,6 +146,9 @@ add_library(object_detector
 add_library(fps
   src/fps.cpp
 )
+add_library(landmark_processor
+  src/landmark_processor.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -183,9 +186,12 @@ target_link_libraries(video_loader
   ${OpenCV_LIBRARIES}
   object_detector
 )
-target_link_libraries(${PROJECT_NAME}_node
+target_link_libraries(landmark_processor
+  object_detector
   video_loader
-  fps
+)
+target_link_libraries(${PROJECT_NAME}_node
+  landmark_processor
 )
 target_link_libraries(video_recording_node
   video_loader
@@ -242,6 +248,7 @@ install(TARGETS
   video_loader
   object_detector
   fps
+  landmark_processor
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
