@@ -8,19 +8,24 @@
 #include "object_detection/video_loader.hpp"
 
 int main(int argc, char const* argv[]) {
-  constexpr int CHECKBOARD_XMAX = 8, CHECKBOARD_YMAX = 6;
-  constexpr double CHECKBOARD_L  = 0.035;  // measured in m
+  constexpr int CHECKBOARD_XMAX = 8;      // column
+  constexpr int CHECKBOARD_YMAX = 6;      // row
+  constexpr double CHECKBOARD_L = 0.035;  // length of unit of checkerboard.
+                                          // measured in m
   const std::string img_save_dir = "camera";
+
+  ROS_WARN(
+      "Starting camera calibration. Please make sure the checkboard is placed "
+      "at exactly 30cm from the camera for the last captured image.");
 
   // object points in 3D world space
   std::vector<std::vector<cv::Point3f>> obj_points;
 
-  // define world coordinates for world object points
-  std::vector<cv::Point3f> obj_points_per_checkerboard;
+  std::vector<cv::Point3f> obj_points_2d;
   for (int i = 0; i < CHECKBOARD_YMAX; ++i)
     for (int j = 0; j < CHECKBOARD_XMAX; ++j)
-      obj_points_per_checkerboard.push_back(
-          cv::Point3d(j * CHECKBOARD_L, i * CHECKBOARD_L, 0.));
+      obj_points_2d.push_back(
+          cv::Point3f(j * CHECKBOARD_L, i * CHECKBOARD_L, 0.));
 
   // image points in pixel coordinates
   std::vector<std::vector<cv::Point2f>> img_points;
@@ -50,7 +55,7 @@ int main(int argc, char const* argv[]) {
       cv::drawChessboardCorners(frame,
                                 cv::Size(CHECKBOARD_XMAX, CHECKBOARD_YMAX),
                                 corner_pts, success);
-      obj_points.push_back(obj_points_per_checkerboard);
+      obj_points.push_back(obj_points_2d);
       img_points.push_back(corner_pts);
     }
 
@@ -58,7 +63,9 @@ int main(int argc, char const* argv[]) {
     video_loader.saveFrameToFile(img_save_dir);
   }
 
-  // camera calibration
+  // camera intrinsic calibration
+  //  extrinsic params obtained here is not accurate; will replace with real
+  //  world object points in the next section
   ROS_INFO("Detected %ld object points, %ld image points", obj_points.size(),
            img_points.size());
   cv::Mat intrinsic_mtx, distortion_coeff, rotation_vec, translation_vec;
@@ -66,17 +73,36 @@ int main(int argc, char const* argv[]) {
       obj_points, img_points,
       cv::Size(video_loader.getFrame().rows, video_loader.getFrame().cols),
       intrinsic_mtx, distortion_coeff, rotation_vec, translation_vec);
+  ROS_INFO("----- Camera intrinsic calibration finished -----");
 
-  ROS_INFO_STREAM("Camera intrinsic matrix:\n" << intrinsic_mtx);
-  ROS_INFO_STREAM("Distortion coefficients:\n" << distortion_coeff);
-  ROS_INFO_STREAM("Rotation vector:\n" << rotation_vec);
-  ROS_INFO_STREAM("Translation vector:\n" << translation_vec);
+  // camera extrinsic calibration
+  // define world coordinates for world object points
+  //  use coordinate the same as body frame. X forward, Y left, Z up
+  std::vector<cv::Point3f> obj_points_per_checkerboard;
+  for (int i = 0; i < CHECKBOARD_YMAX; ++i)
+    for (int j = 0; j < CHECKBOARD_XMAX; ++j)
+      obj_points_per_checkerboard.push_back(
+          cv::Point3f(0.3, (CHECKBOARD_XMAX / 2 - j) * CHECKBOARD_L,
+                      (CHECKBOARD_YMAX / 2 - i) * CHECKBOARD_L));
+
+  cv::solvePnP(obj_points_per_checkerboard, img_points.back(), intrinsic_mtx,
+               distortion_coeff, rotation_vec, translation_vec, false,
+               cv::SOLVEPNP_IPPE);
+  ROS_INFO("----- Camera extrinsic calibration finished -----");
+
+  cv::Mat rotation_mat;
+  cv::Rodrigues(rotation_vec, rotation_mat);
+
+  ROS_INFO_STREAM("Camera intrinsic matrix:\n" << intrinsic_mtx << "\n");
+  ROS_INFO_STREAM("Distortion coefficients:\n" << distortion_coeff << "\n");
+  ROS_INFO_STREAM("Rotation matrix:\n" << rotation_mat << "\n");
+  ROS_INFO_STREAM("Translation vector:\n" << translation_vec << "\n");
 
   // save calibrated data to file
   cv::FileStorage file(cv::format("%s/params.xml", img_save_dir.c_str()),
                        cv::FileStorage::WRITE);
   file << "intrinsic" << intrinsic_mtx << "distortion" << distortion_coeff
-       << "rotation" << rotation_vec << "translation" << translation_vec;
+       << "rotation" << rotation_mat << "translation" << translation_vec;
   file.release();
 
   return 0;
