@@ -156,6 +156,9 @@ add_library(fps
 add_library(landmark_processor
   src/landmark_processor.cpp
 )
+add_library(apriltag_detector
+  src/apriltag_detector.cpp
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -196,6 +199,11 @@ target_link_libraries(video_loader
 target_link_libraries(landmark_processor
   object_detector
   video_loader
+)
+target_link_libraries(apriltag_detector
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  apriltag
 )
 target_link_libraries(${PROJECT_NAME}_node
   landmark_processor
@@ -256,6 +264,7 @@ install(TARGETS
   object_detector
   fps
   landmark_processor
+  apriltag_detector
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
