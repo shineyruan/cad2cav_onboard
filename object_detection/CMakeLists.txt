@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(object_detection)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-add_compile_options(-std=c++17)
 add_compile_options(-fdiagnostics-color=always)  # colored output in Ninja build
-add_compile_options(-march=native -O0 -ggdb -fno-omit-frame-pointer)
+set(CMAKE_C_FLAGS_DEBUG "-Wall -O0 -ggdb -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_DEBUG "-std=c++17 -Wall -Werror -O0 -ggdb -fno-omit-frame-pointer")
+set(CMAKE_CXX_FLAGS_RELEASE "-std=c++17 -Wall -O2")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)

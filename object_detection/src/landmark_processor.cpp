@@ -21,8 +21,8 @@ LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      cv::String camera_calibration_params_path)
     : n_(ros::NodeHandle()),
       it_(n_),
-      current_frame_(),
       camera_params_path_(camera_calibration_params_path),
+      current_frame_(),
       object_detector_(model_path, dnn_type, dataset_type, config_path) {
   init();
 }
@@ -30,8 +30,8 @@ LandmarkProcessor::LandmarkProcessor(const std::string model_path,
 LandmarkProcessor::LandmarkProcessor()
     : n_(ros::NodeHandle()),
       it_(n_),
-      current_frame_(),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
+      current_frame_(),
       object_detector_(DEFAULT_MODEL_PATH, DNNType::DARKNET, DatasetType::COCO,
                        DEFAULT_CONFIG_PATH) {
   init();
@@ -42,8 +42,8 @@ LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      DNNType dnn_type, DatasetType dataset_type)
     : n_(ros::NodeHandle()),
       it_(n_),
-      current_frame_(),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
+      current_frame_(),
       object_detector_(model_path, dnn_type, dataset_type, config_path) {
   init();
 }
