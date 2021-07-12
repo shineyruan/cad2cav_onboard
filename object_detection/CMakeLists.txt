@@ -127,6 +127,12 @@ catkin_package(
 ## Build ##
 ###########
 
+# include Apriltag-3.1.4 library
+set(BUILD_PYTHON_WRAPPER OFF)
+string(REPLACE " -Werror" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+add_subdirectory(include/apriltag-3.1.4)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
