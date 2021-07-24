@@ -124,12 +124,7 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
     tag.tag_center = cv::Point2f(det->c[0], det->c[1]);
 
     // construct tag rotation matrix
-    cv::Mat rotation_mtx(tag_pose.R->nrows, tag_pose.R->ncols, CV_64F,
-                         const_cast<double*>(tag_pose.R->data));
-    cv::Mat rotation_vec;
-    cv::Rodrigues(rotation_mtx, rotation_vec);
-    rotation_vec.convertTo(rotation_vec, CV_32F);
-    tag.rot = rotation_vec.reshape(3).at<cv::Vec3f>();
+    tag.rot = apriltag::utils::matdToAxisAngle(tag_pose.R);
 
     // construct tag corners
     for (int i = 0; i < 4; ++i) {

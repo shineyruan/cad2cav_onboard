@@ -58,9 +58,6 @@ int main(int argc, char **argv) {
         tag_detector.visualizeTags(detections, video_loader.getFrame()));
     if (!detections.empty()) {
       // right X, down Y, forward Z
-      auto unit_rotation = cv::Mat::eye(3, 3, CV_32F);
-      cv::Mat unit_rotation_vec;
-      cv::Rodrigues(unit_rotation, unit_rotation_vec);
       ROS_INFO_STREAM("Tag pose: " << detections.front().pos
                                    << "; Tag rotation: "
                                    << detections.front().rot);
