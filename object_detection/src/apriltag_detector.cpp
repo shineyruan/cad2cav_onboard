@@ -110,6 +110,9 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
                                           .fy      = fy_,
                                           .cx      = cx_,
                                           .cy      = cy_};
+
+    // TODO: original pose estimation is in camera frame: <forward Z, right X,
+    // down Y>. Need to transform it into standard robot body frame.
     apriltag_pose_t tag_pose;
     estimate_tag_pose(&det_info, &tag_pose);
 
