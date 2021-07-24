@@ -114,12 +114,65 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
     estimate_tag_pose(&det_info, &tag_pose);
 
     apriltag::TagInfo tag;
-    tag.id   = det->id;
-    tag.type = tag_type_;
+    tag.id         = det->id;
+    tag.type       = tag_type_;
+    tag.pos        = cv::Vec3f(tag_pose.t->data[0], tag_pose.t->data[1],
+                        tag_pose.t->data[2]);
+    tag.tag_center = cv::Point2f(det->c[0], det->c[1]);
+
+    // construct tag rotation matrix
+    cv::Mat rotation_mtx(tag_pose.R->nrows, tag_pose.R->ncols, CV_64F,
+                         const_cast<double*>(tag_pose.R->data));
+    cv::Mat rotation_vec;
+    cv::Rodrigues(rotation_mtx, rotation_vec);
+    rotation_vec.convertTo(rotation_vec, CV_32F);
+    tag.rot = rotation_vec.reshape(3).at<cv::Vec3f>();
+
+    // construct tag corners
+    for (int i = 0; i < 4; ++i) {
+      tag.tag_corners[i] = cv::Point2f(det->p[i][0], det->p[i][1]);
+    }
+
     list_tags.emplace_back(tag);
   }
 
+  zarray_destroy(detections);
+
   return list_tags;
+}
+
+cv::Mat AprilTagDetector::visualizeTags(
+    const std::vector<apriltag::TagInfo>& list_tags, const cv::Mat& frame) {
+  cv::Mat ret = frame.clone();
+
+  const auto green  = cv::Scalar(0, 255, 0);
+  const auto yellow = cv::Scalar(0, 255, 255);
+
+  for (const auto& tag : list_tags) {
+    // draw bounding boxes around apriltag
+    cv::line(ret, cv::Point(tag.tag_corners[0]), cv::Point(tag.tag_corners[1]),
+             green, 2);
+    cv::line(ret, cv::Point(tag.tag_corners[1]), cv::Point(tag.tag_corners[2]),
+             green, 2);
+    cv::line(ret, cv::Point(tag.tag_corners[2]), cv::Point(tag.tag_corners[3]),
+             green, 2);
+    cv::line(ret, cv::Point(tag.tag_corners[3]), cv::Point(tag.tag_corners[0]),
+             green, 2);
+
+    // display apriltag ID
+    cv::String text  = std::to_string(tag.id);
+    int fontface     = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+    double fontscale = 1.0;
+    int baseline     = 0;
+    cv::Size textsize =
+        cv::getTextSize(text, fontface, fontscale, 2, &baseline);
+    cv::putText(ret, text,
+                cv::Point(tag.tag_center.x - textsize.width / 2,
+                          tag.tag_center.y + textsize.height / 2),
+                fontface, fontscale, yellow, 2);
+  }
+
+  return ret;
 }
 
 }  // namespace object_detection

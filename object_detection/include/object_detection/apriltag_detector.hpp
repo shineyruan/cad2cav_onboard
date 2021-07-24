@@ -37,7 +37,7 @@ private:
   apriltag::TagType tag_type_;
   apriltag_family_t* tag_family_;
   apriltag_detector_t* tag_detector_;
-  double tag_size_;
+  double tag_size_;  // m
 
   // camera intrinsic related params
   // for more into see
