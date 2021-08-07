@@ -13,7 +13,7 @@ Welcome to the on-board part of CAD2CAV project. For a detailed project document
 ## Software Requirements
 - Boost 1.71
 - [OpenCV 4.5.1](https://github.com/opencv/opencv/tree/4.5.1)
-- [TensorRT 7.2.3.4](https://developer.nvidia.com/nvidia-tensorrt-7x-download)
+- [TensorRT 8.0.1](https://developer.nvidia.com/tensorrt-getting-started)
 
 First run and install the following packages from Ubuntu repository:
 ```bash
