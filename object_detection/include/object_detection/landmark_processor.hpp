@@ -10,18 +10,24 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include "cartographer_ros_msgs/LandmarkList.h"
+#include "object_detection/apriltag_detector.hpp"
 #include "object_detection/object_detector.hpp"
 
 namespace object_detection {
 
 class LandmarkProcessor {
 public:
-  LandmarkProcessor();
-  LandmarkProcessor(const std::string model_path, const std::string config_path,
-                    DNNType dnn_type, DatasetType dataset_type);
+  LandmarkProcessor(std::string tag_family = "TagStandard41h12",
+                    double tag_size        = 0.01495);
   LandmarkProcessor(const std::string model_path, const std::string config_path,
                     DNNType dnn_type, DatasetType dataset_type,
-                    cv::String camera_calibration_params_path);
+                    std::string tag_family = "TagStandard41h12",
+                    double tag_size        = 0.01495);
+  LandmarkProcessor(const std::string model_path, const std::string config_path,
+                    DNNType dnn_type, DatasetType dataset_type,
+                    cv::String camera_calibration_params_path,
+                    std::string tag_family = "TagStandard41h12",
+                    double tag_size        = 0.01495);
 
   cv::Mat getFrame() const { return current_frame_; }
 
@@ -60,7 +66,8 @@ private:
   cv::Mat camera_extrinsic_trans_;
 
   cv::Mat current_frame_;
-  ObjectDetector object_detector_;
+  std::unique_ptr<ObjectDetector> object_detector_;
+  std::unique_ptr<AprilTagDetector> apriltag_detector_;
 
   void init();
   void initCameraParams();

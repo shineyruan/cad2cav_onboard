@@ -18,34 +18,45 @@ void LandmarkProcessor::init() {
 LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      const std::string config_path,
                                      DNNType dnn_type, DatasetType dataset_type,
-                                     cv::String camera_calibration_params_path)
+                                     cv::String camera_calibration_params_path,
+                                     std::string tag_family, double tag_size)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(camera_calibration_params_path),
-      current_frame_(),
-      object_detector_(model_path, dnn_type, dataset_type, config_path) {
+      current_frame_() {
+  object_detector_ = std::make_unique<ObjectDetector>(
+      model_path, dnn_type, dataset_type, config_path);
   init();
+  apriltag_detector_ = std::make_unique<AprilTagDetector>(tag_family, tag_size,
+                                                          camera_intrinsic_);
 }
 
-LandmarkProcessor::LandmarkProcessor()
+LandmarkProcessor::LandmarkProcessor(std::string tag_family, double tag_size)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
-      current_frame_(),
-      object_detector_(DEFAULT_MODEL_PATH, DNNType::DARKNET, DatasetType::COCO,
-                       DEFAULT_CONFIG_PATH) {
+      current_frame_() {
+  object_detector_ =
+      std::make_unique<ObjectDetector>(DEFAULT_MODEL_PATH, DNNType::DARKNET,
+                                       DatasetType::COCO, DEFAULT_CONFIG_PATH);
   init();
+  apriltag_detector_ = std::make_unique<AprilTagDetector>(tag_family, tag_size,
+                                                          camera_intrinsic_);
 }
 
 LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      const std::string config_path,
-                                     DNNType dnn_type, DatasetType dataset_type)
+                                     DNNType dnn_type, DatasetType dataset_type,
+                                     std::string tag_family, double tag_size)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
-      current_frame_(),
-      object_detector_(model_path, dnn_type, dataset_type, config_path) {
+      current_frame_() {
+  object_detector_ = std::make_unique<ObjectDetector>(
+      model_path, dnn_type, dataset_type, config_path);
   init();
+  apriltag_detector_ = std::make_unique<AprilTagDetector>(tag_family, tag_size,
+                                                          camera_intrinsic_);
 }
 
 void LandmarkProcessor::publishLandmark(
@@ -95,7 +106,7 @@ void LandmarkProcessor::imageReceiveCallback(
   updateFrame(frame);
 
   // visualize bounding box
-  const auto detection_results = object_detector_.infer(current_frame_);
+  const auto detection_results = object_detector_->infer(current_frame_);
   visualize(ObjectDetector::visualizeBBox(current_frame_, detection_results));
 
   // publish landmark to Cartographer SLAM
