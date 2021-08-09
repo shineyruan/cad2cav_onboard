@@ -127,8 +127,8 @@ void LandmarkProcessor::imageReceiveCallback(
   updateFrame(frame);
 
   // visualize bounding box
-  const auto detection_results = object_detector_->infer(current_frame_);
-  visualize(ObjectDetector::visualizeBBox(current_frame_, detection_results));
+  const auto detection_results = apriltag_detector_->detect(current_frame_);
+  visualize(AprilTagDetector::visualizeTags(detection_results, current_frame_));
 
   // publish landmark to Cartographer SLAM
   publishLandmark(detection_results, msg->header.stamp);
