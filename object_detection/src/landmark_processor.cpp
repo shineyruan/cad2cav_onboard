@@ -80,6 +80,27 @@ void LandmarkProcessor::publishLandmark(
   landmark_pub_.publish(landmark_list);
 }
 
+void LandmarkProcessor::publishLandmark(
+    const std::vector<apriltag::TagInfo>& tag_list,
+    const ros::Time& msg_stamp) const {
+  cartographer_ros_msgs::LandmarkList landmark_list;
+  landmark_list.header.stamp    = msg_stamp;
+  landmark_list.header.frame_id = "base_link";
+
+  for (unsigned int i = 0; i < tag_list.size(); ++i) {
+    cartographer_ros_msgs::LandmarkEntry landmark;
+    landmark.id                                          = std::to_string(i);
+    landmark.tracking_from_landmark_transform.position.x = tag_list[i].pos[0];
+    landmark.tracking_from_landmark_transform.position.y = tag_list[i].pos[1];
+    landmark.tracking_from_landmark_transform.position.z = tag_list[i].pos[2];
+    landmark.rotation_weight                             = 1e6;
+    landmark.translation_weight                          = 1e6;
+    landmark_list.landmarks.emplace_back(landmark);
+  }
+
+  landmark_pub_.publish(landmark_list);
+}
+
 std::vector<cv::Point3f> LandmarkProcessor::deproject(
     const std::vector<BoundingBox>& bbox_list) {
   std::vector<cv::Point3f> object_list;

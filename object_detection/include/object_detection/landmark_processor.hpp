@@ -40,6 +40,8 @@ public:
 
   void publishLandmark(const std::vector<BoundingBox>& bbox_list,
                        const ros::Time& msg_stamp) const;
+  void publishLandmark(const std::vector<apriltag::TagInfo>& tag_list,
+                       const ros::Time& msg_stamp) const;
 
   std::vector<cv::Point3f> deproject(const std::vector<BoundingBox>& bbox_list);
 
