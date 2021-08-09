@@ -111,7 +111,7 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
                                           .cx      = cx_,
                                           .cy      = cy_};
 
-    // TODO: original pose estimation is in camera frame: <forward Z, right X,
+    // Note. Original pose estimation is in camera frame: <forward Z, right X,
     // down Y>. Need to transform it into standard robot body frame.
     apriltag_pose_t tag_pose;
     estimate_tag_pose(&det_info, &tag_pose);
@@ -119,8 +119,8 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
     apriltag::TagInfo tag;
     tag.id         = det->id;
     tag.type       = tag_type_;
-    tag.pos        = cv::Vec3f(tag_pose.t->data[0], tag_pose.t->data[1],
-                        tag_pose.t->data[2]);
+    tag.pos        = toBaseLinkFrame(cv::Vec3f(
+        tag_pose.t->data[0], tag_pose.t->data[1], tag_pose.t->data[2]));
     tag.tag_center = cv::Point2f(det->c[0], det->c[1]);
 
     // construct tag rotation matrix
@@ -171,6 +171,14 @@ cv::Mat AprilTagDetector::visualizeTags(
   }
 
   return ret;
+}
+
+cv::Vec3f AprilTagDetector::toBaseLinkFrame(const cv::Vec3f& pt) {
+  static const cv::Mat transformation =
+      (cv::Mat_<float>(3, 3) << 0, -1, 0, 0, 0, -1, 1, 0, 0);
+  cv::Mat ret = transformation.t() * cv::Mat(pt);
+  ret.convertTo(ret, CV_32F);
+  return ret.reshape(3).at<cv::Vec3f>();
 }
 
 }  // namespace object_detection

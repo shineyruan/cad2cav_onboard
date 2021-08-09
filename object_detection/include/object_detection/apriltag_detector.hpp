@@ -46,6 +46,15 @@ private:
   double fy_;
   double cx_;
   double cy_;
+
+  /**
+   * @brief Converts a point in apriltag camera frame to base_link frame (body
+   * frame).
+   *
+   * @param pt
+   * @return cv::Vec3f
+   */
+  static cv::Vec3f toBaseLinkFrame(const cv::Vec3f& pt);
 };
 
 }  // namespace object_detection
