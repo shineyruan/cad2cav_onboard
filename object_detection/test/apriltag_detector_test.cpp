@@ -46,8 +46,8 @@ int main(int argc, char **argv) {
   file.release();
 
   // init video loader & apriltag detector
-  const std::string tag_family = "TagStandard41h12";
-  const double tag_size        = 0.01495;
+  const std::string tag_family = "Tag36h11";
+  const double tag_size        = 0.168;
   object_detection::VideoLoader video_loader(video_path, use_webcam);
   object_detection::AprilTagDetector tag_detector(tag_family, tag_size,
                                                   cam_intrinsic);
