@@ -200,6 +200,7 @@ target_link_libraries(video_loader
 target_link_libraries(landmark_processor
   object_detector
   video_loader
+  apriltag_detector
 )
 target_link_libraries(apriltag_detector
   ${catkin_LIBRARIES}

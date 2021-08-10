@@ -6,6 +6,7 @@
 #include <ros/package.h>
 #include <sensor_msgs/image_encodings.h>
 
+#include <memory>
 #include <opencv2/core/utils/filesystem.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
