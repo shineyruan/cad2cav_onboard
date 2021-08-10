@@ -89,7 +89,7 @@ void LandmarkProcessor::publishLandmark(
 
   for (unsigned int i = 0; i < tag_list.size(); ++i) {
     cartographer_ros_msgs::LandmarkEntry landmark;
-    landmark.id                                          = tag_list[i].id;
+    landmark.id = std::to_string(tag_list[i].id);
     landmark.tracking_from_landmark_transform.position.x = tag_list[i].pos[0];
     landmark.tracking_from_landmark_transform.position.y = tag_list[i].pos[1];
     landmark.tracking_from_landmark_transform.position.z = tag_list[i].pos[2];
