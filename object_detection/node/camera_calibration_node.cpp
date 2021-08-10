@@ -12,11 +12,14 @@ int main(int argc, char const* argv[]) {
   constexpr int CHECKBOARD_YMAX = 6;      // row
   constexpr double CHECKBOARD_L = 0.035;  // length of unit of checkerboard.
                                           // measured in m
+  constexpr double checkerboard_depth =
+      0.61;  // depth used for extrinsic calibration (m)
   const std::string img_save_dir = "camera";
 
   ROS_WARN(
       "Starting camera calibration. Please make sure the checkboard is placed "
-      "at exactly 30cm from the camera for the last captured image.");
+      "at exactly %fcm from the camera for the last captured image.",
+      checkerboard_depth * 100);
 
   // object points in 3D world space
   std::vector<std::vector<cv::Point3f>> obj_points;
@@ -81,9 +84,9 @@ int main(int argc, char const* argv[]) {
   std::vector<cv::Point3f> obj_points_per_checkerboard;
   for (int i = 0; i < CHECKBOARD_YMAX; ++i)
     for (int j = 0; j < CHECKBOARD_XMAX; ++j)
-      obj_points_per_checkerboard.push_back(
-          cv::Point3f(0.3, (CHECKBOARD_XMAX / 2 - j) * CHECKBOARD_L,
-                      (CHECKBOARD_YMAX / 2 - i) * CHECKBOARD_L));
+      obj_points_per_checkerboard.push_back(cv::Point3f(
+          checkerboard_depth, (CHECKBOARD_XMAX / 2 - j) * CHECKBOARD_L,
+          (CHECKBOARD_YMAX / 2 - i) * CHECKBOARD_L));
 
   cv::solvePnP(obj_points_per_checkerboard, img_points.back(), intrinsic_mtx,
                distortion_coeff, rotation_vec, translation_vec, false,
