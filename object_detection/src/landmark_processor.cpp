@@ -107,15 +107,6 @@ void LandmarkProcessor::publishLandmark(
   landmark_pub_.publish(landmark_list);
 }
 
-std::vector<cv::Point3f> LandmarkProcessor::deproject(
-    const std::vector<BoundingBox>& bbox_list) {
-  std::vector<cv::Point3f> object_list;
-
-  // TODO
-
-  return object_list;
-}
-
 void LandmarkProcessor::imageReceiveCallback(
     const sensor_msgs::ImageConstPtr& msg) {
   cv::Mat frame;
