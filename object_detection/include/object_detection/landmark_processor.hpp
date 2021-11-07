@@ -6,13 +6,17 @@
 #include <ros/package.h>
 #include <sensor_msgs/image_encodings.h>
 
+#include <Eigen/Dense>
+#include <boost/filesystem.hpp>
 #include <memory>
-#include <opencv2/core/utils/filesystem.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "cad2cav_types/camera.hpp"
 #include "cartographer_ros_msgs/LandmarkList.h"
 #include "object_detection/apriltag_detector.hpp"
 #include "object_detection/object_detector.hpp"
+
+namespace fs = boost::filesystem;
 
 namespace object_detection {
 
@@ -26,7 +30,7 @@ public:
                     double tag_size        = 0.01495);
   LandmarkProcessor(const std::string model_path, const std::string config_path,
                     DNNType dnn_type, DatasetType dataset_type,
-                    cv::String camera_calibration_params_path,
+                    std::string camera_calibration_params_path,
                     std::string tag_family = "TagStandard41h12",
                     double tag_size        = 0.01495);
 
@@ -47,24 +51,25 @@ public:
   void imageReceiveCallback(const sensor_msgs::ImageConstPtr& msg);
 
 private:
-  const cv::String PACKAGE_DIR = ros::package::getPath("object_detection");
-  const cv::String DEFAULT_MODEL_PATH = cv::utils::fs::join(
-                       PACKAGE_DIR, "models/yolov4-tiny.weights"),
-                   DEFAULT_CONFIG_PATH = cv::utils::fs::join(
-                       PACKAGE_DIR, "models/yolov4-tiny.cfg");
-  const cv::String DEFAULT_CAM_PARAM_PATH =
-      cv::utils::fs::join(PACKAGE_DIR, "params/camera/params.xml");
+  const std::string PACKAGE_DIR = ros::package::getPath("object_detection");
+  const std::string
+      DEFAULT_MODEL_PATH =
+          (fs::path(PACKAGE_DIR) / "models/yolov4-tiny.weights").string(),
+      DEFAULT_CONFIG_PATH =
+          (fs::path(PACKAGE_DIR) / "models/yolov4-tiny.cfg").string();
+  const std::string DEFAULT_CAM_PARAM_PATH =
+      (fs::path(PACKAGE_DIR) / "params/camera/params.xml").string();
 
   ros::NodeHandle n_;
   image_transport::ImageTransport it_;
   image_transport::Subscriber img_sub_;
   ros::Publisher landmark_pub_;
 
-  cv::String camera_params_path_;
-  cv::Mat camera_intrinsic_;
-  cv::Mat camera_distortion_coeff_;
-  cv::Mat camera_extrinsic_rot_;
-  cv::Mat camera_extrinsic_trans_;
+  std::string camera_params_path_;
+  Eigen::Matrix3d camera_intrinsic_;
+  Eigen::RowVectorXd camera_distortion_coeff_;
+  Eigen::Matrix3d camera_extrinsic_rot_;
+  Eigen::Vector3d camera_extrinsic_trans_;
 
   cv::Mat current_frame_;
   std::unique_ptr<ObjectDetector> object_detector_;
