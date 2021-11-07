@@ -93,11 +93,14 @@ void LandmarkProcessor::publishLandmark(
     landmark.tracking_from_landmark_transform.position.x = tag_list[i].pos[0];
     landmark.tracking_from_landmark_transform.position.y = tag_list[i].pos[1];
     landmark.tracking_from_landmark_transform.position.z = tag_list[i].pos[2];
-    landmark.tracking_frmo_landmark_transform.orientation.x = tag_list[i].rot[0];
-    landmark.tracking_frmo_landmark_transform.orientation.y = tag_list[i].rot[1];
-    landmark.tracking_frmo_landmark_transform.orientation.z = tag_list[i].rot[2];
-    landmark.rotation_weight                             = 1e6;
-    landmark.translation_weight                          = 1e6;
+    landmark.tracking_from_landmark_transform.orientation.x =
+        tag_list[i].rot[0];
+    landmark.tracking_from_landmark_transform.orientation.y =
+        tag_list[i].rot[1];
+    landmark.tracking_from_landmark_transform.orientation.z =
+        tag_list[i].rot[2];
+    landmark.rotation_weight    = 1e6;
+    landmark.translation_weight = 1e6;
     landmark_list.landmarks.emplace_back(landmark);
   }
 
