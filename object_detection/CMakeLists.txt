@@ -20,11 +20,14 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   sensor_msgs
   cartographer_ros_msgs
+  cad2cav_msgs
+  cad2cav_types
 )
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS program_options)
 find_package(OpenCV 4 REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 find_package(CUDA)
 if (CUDA_FOUND)
@@ -123,7 +126,7 @@ endif()
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES video_loader object_detector
- CATKIN_DEPENDS roscpp roslib cv_bridge image_transport sensor_msgs cartographer_ros_msgs
+ CATKIN_DEPENDS roscpp roslib cv_bridge image_transport sensor_msgs cartographer_ros_msgs cad2cav_msgs cad2cav_types
 #  DEPENDS system_lib
 )
 
@@ -144,6 +147,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIR}
+  ${EIGEN3_INCLUDE_DIR}
 )
 
 ## Declare a C++ library
@@ -283,6 +287,13 @@ install(TARGETS
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING 
+  PATTERN "*.h"
+  PATTERN "*.hpp"
+  PATTERN ".svn" EXCLUDE
+)
+install(DIRECTORY include/apriltag-3.1.4/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/apriltag-3.1.4
   FILES_MATCHING 
   PATTERN "*.h"
   PATTERN "*.hpp"

@@ -4,6 +4,8 @@
 #include <ros/package.h>
 #include <ros/ros.h>
 
+#include <Eigen/Dense>
+
 #include "object_detection/video_loader.hpp"
 
 static const cv::String KEYS =
@@ -45,12 +47,16 @@ int main(int argc, char **argv) {
   file["intrinsic"] >> cam_intrinsic;
   file.release();
 
+  Eigen::Matrix3d eigen_intrinsic =
+      Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>>(
+          cam_intrinsic.ptr<double>());
+
   // init video loader & apriltag detector
   const std::string tag_family = "Tag36h11";
   const double tag_size        = 0.168;
   object_detection::VideoLoader video_loader(video_path, use_webcam);
   object_detection::AprilTagDetector tag_detector(tag_family, tag_size,
-                                                  cam_intrinsic);
+                                                  eigen_intrinsic);
 
   while (video_loader.nextFrame()) {
     const auto detections = tag_detector.detect(video_loader.getFrame());
@@ -60,7 +66,8 @@ int main(int argc, char **argv) {
       // right X, down Y, forward Z
       ROS_INFO_STREAM("Tag pose: " << detections.front().pos
                                    << "; Tag rotation: "
-                                   << detections.front().rot);
+                                   << (detections.front().rot.angle() *
+                                       detections.front().rot.axis()));
     }
   }
 

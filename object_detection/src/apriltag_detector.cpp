@@ -41,15 +41,14 @@ AprilTagDetector::AprilTagDetector(apriltag::TagType tag_type, double tag_size,
 }
 
 AprilTagDetector::AprilTagDetector(apriltag::TagType tag_type, double tag_size,
-                                   const cv::Mat& intrinsic_mtx)
-    : AprilTagDetector(tag_type, tag_size, intrinsic_mtx.at<double>(0, 0),
-                       intrinsic_mtx.at<double>(1, 1),
-                       intrinsic_mtx.at<double>(0, 2),
-                       intrinsic_mtx.at<double>(1, 2)) {}
+                                   const Eigen::Matrix3d& intrinsic_mtx)
+    : AprilTagDetector(tag_type, tag_size, intrinsic_mtx(0, 0),
+                       intrinsic_mtx(1, 1), intrinsic_mtx(0, 2),
+                       intrinsic_mtx(1, 2)) {}
 
 AprilTagDetector::AprilTagDetector(const std::string tag_type_str,
                                    double tag_size,
-                                   const cv::Mat& intrinsic_mtx)
+                                   const Eigen::Matrix3d& intrinsic_mtx)
     : AprilTagDetector(apriltag::fromString(tag_type_str), tag_size,
                        intrinsic_mtx) {}
 
@@ -119,16 +118,16 @@ std::vector<apriltag::TagInfo> AprilTagDetector::detect(
     apriltag::TagInfo tag;
     tag.id         = det->id;
     tag.type       = tag_type_;
-    tag.pos        = toBaseLinkFrame(cv::Vec3f(
+    tag.pos        = toBaseLinkFrame(Eigen::Vector3f(
         tag_pose.t->data[0], tag_pose.t->data[1], tag_pose.t->data[2]));
-    tag.tag_center = cv::Point2f(det->c[0], det->c[1]);
+    tag.tag_center = Eigen::Vector2f(det->c[0], det->c[1]);
 
     // construct tag rotation matrix
     tag.rot = apriltag::utils::matdToAxisAngle(tag_pose.R);
 
     // construct tag corners
     for (int i = 0; i < 4; ++i) {
-      tag.tag_corners[i] = cv::Point2f(det->p[i][0], det->p[i][1]);
+      tag.tag_corners[i] = Eigen::Vector2f(det->p[i][0], det->p[i][1]);
     }
 
     list_tags.emplace_back(tag);
@@ -148,14 +147,18 @@ cv::Mat AprilTagDetector::visualizeTags(
 
   for (const auto& tag : list_tags) {
     // draw bounding boxes around apriltag
-    cv::line(ret, cv::Point(tag.tag_corners[0]), cv::Point(tag.tag_corners[1]),
-             green, 2);
-    cv::line(ret, cv::Point(tag.tag_corners[1]), cv::Point(tag.tag_corners[2]),
-             green, 2);
-    cv::line(ret, cv::Point(tag.tag_corners[2]), cv::Point(tag.tag_corners[3]),
-             green, 2);
-    cv::line(ret, cv::Point(tag.tag_corners[3]), cv::Point(tag.tag_corners[0]),
-             green, 2);
+    cv::line(ret, cv::Point(tag.tag_corners[0].x(), tag.tag_corners[0].y()),
+             cv::Point(tag.tag_corners[1].x(), tag.tag_corners[1].y()), green,
+             2);
+    cv::line(ret, cv::Point(tag.tag_corners[1].x(), tag.tag_corners[1].y()),
+             cv::Point(tag.tag_corners[2].x(), tag.tag_corners[2].y()), green,
+             2);
+    cv::line(ret, cv::Point(tag.tag_corners[2].x(), tag.tag_corners[2].y()),
+             cv::Point(tag.tag_corners[3].x(), tag.tag_corners[3].y()), green,
+             2);
+    cv::line(ret, cv::Point(tag.tag_corners[3].x(), tag.tag_corners[3].y()),
+             cv::Point(tag.tag_corners[0].x(), tag.tag_corners[0].y()), green,
+             2);
 
     // display apriltag ID
     cv::String text  = std::to_string(tag.id);
@@ -165,20 +168,19 @@ cv::Mat AprilTagDetector::visualizeTags(
     cv::Size textsize =
         cv::getTextSize(text, fontface, fontscale, 2, &baseline);
     cv::putText(ret, text,
-                cv::Point(tag.tag_center.x - textsize.width / 2,
-                          tag.tag_center.y + textsize.height / 2),
+                cv::Point(tag.tag_center.x() - textsize.width / 2,
+                          tag.tag_center.y() + textsize.height / 2),
                 fontface, fontscale, yellow, 2);
   }
 
   return ret;
 }
 
-cv::Vec3f AprilTagDetector::toBaseLinkFrame(const cv::Vec3f& pt) {
-  static const cv::Mat transformation =
-      (cv::Mat_<float>(3, 3) << 0, -1, 0, 0, 0, -1, 1, 0, 0);
-  cv::Mat ret = transformation.t() * cv::Mat(pt);
-  ret.convertTo(ret, CV_32F);
-  return ret.reshape(3).at<cv::Vec3f>();
+Eigen::Vector3f AprilTagDetector::toBaseLinkFrame(const Eigen::Vector3f& pt) {
+  static Eigen::Matrix3f transformation;
+  transformation << 0, -1, 0, 0, 0, -1, 1, 0, 0;
+  Eigen::Vector3f ret = transformation.transpose() * pt;
+  return ret;
 }
 
 }  // namespace object_detection

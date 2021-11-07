@@ -14,6 +14,8 @@
  * @date 2021-07-12
  */
 
+#include <Eigen/Dense>
+
 #include "object_detection/apriltag.hpp"
 
 namespace object_detection {
@@ -23,9 +25,9 @@ public:
   AprilTagDetector(apriltag::TagType tag_type, double tag_size, double fx,
                    double fy, double cx, double cy);
   AprilTagDetector(apriltag::TagType tag_type, double tag_size,
-                   const cv::Mat& intrinsic_mtx);
+                   const Eigen::Matrix3d& intrinsic_mtx);
   AprilTagDetector(const std::string tag_type_str, double tag_size,
-                   const cv::Mat& intrinsic_mtx);
+                   const Eigen::Matrix3d& intrinsic_mtx);
   ~AprilTagDetector();
 
   std::vector<apriltag::TagInfo> detect(const cv::Mat& frame) const;
@@ -52,9 +54,9 @@ private:
    * frame).
    *
    * @param pt
-   * @return cv::Vec3f
+   * @return Eigen::Vector3f
    */
-  static cv::Vec3f toBaseLinkFrame(const cv::Vec3f& pt);
+  static Eigen::Vector3f toBaseLinkFrame(const Eigen::Vector3f& pt);
 };
 
 }  // namespace object_detection

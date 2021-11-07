@@ -12,6 +12,7 @@
 
 #include <ros/console.h>
 
+#include <Eigen/Dense>
 #include <opencv2/opencv.hpp>
 
 #include "apriltag-3.1.4/apriltag.h"
@@ -27,13 +28,12 @@ namespace object_detection {
 namespace apriltag {
 
 namespace utils {
-inline cv::Vec3f matdToAxisAngle(matd_t* R) {
+inline Eigen::AngleAxisf matdToAxisAngle(matd_t* R) {
   assert(R->nrows == 3 && R->ncols == 3);
-  const cv::Mat rotation_mat = cv::Mat(R->nrows, R->ncols, CV_64F, R->data);
-  cv::Mat rotation_vec;
-  cv::Rodrigues(rotation_mat, rotation_vec);
-  rotation_vec.convertTo(rotation_vec, CV_32F);
-  return rotation_vec.reshape(3).at<cv::Vec3f>();
+  const Eigen::Map<Eigen::Matrix<double, 3, 3, Eigen::RowMajor>> rotation_mat{
+      R->data};
+  Eigen::AngleAxisd rotation_vec{rotation_mat};
+  return rotation_vec.cast<float>();
 }
 }  // namespace utils
 
@@ -72,19 +72,18 @@ inline TagType fromString(std::string tag_type) {
 }
 
 struct TagInfo {
-  int id;         // id
-  TagType type;   // tag type
-  cv::Vec3f pos;  // position in camera frame
-  cv::Vec3f rot;  // rotation in camera frame in axis-angle representation
+  int id;               // id
+  TagType type;         // tag type
+  Eigen::Vector3f pos;  // position in camera frame
+  Eigen::AngleAxisf
+      rot;  // rotation in camera frame in axis-angle representation
 
   // tag location in image pixel coordinates
-  cv::Point2f tag_center;                  // center of the tag
-  std::array<cv::Point2f, 4> tag_corners;  // corners of the tag;
-                                           // always counter-clockwise
+  Eigen::Vector2f tag_center;                  // center of the tag
+  std::array<Eigen::Vector2f, 4> tag_corners;  // corners of the tag;
+                                               // always counter-clockwise
 
-  void setPos(matd_t* t) {
-    pos = cv::Vec3f(t->data[0], t->data[1], t->data[2]);
-  }
+  void setPos(matd_t* t) { pos << t->data[0], t->data[1], t->data[2]; }
 
   void setRot(matd_t* R) { rot = utils::matdToAxisAngle(R); }
 };
