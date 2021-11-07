@@ -8,8 +8,8 @@ void LandmarkProcessor::init() {
   ROS_WARN("Listening to topic /camera/image_raw for landmark processing...");
 
   landmark_pub_ =
-      n_.advertise<cartographer_ros_msgs::LandmarkList>("landmark", 1);
-  ROS_INFO("Landmarks published to topic /landmark");
+      n_.advertise<cad2cav_msgs::LandmarkDetectionList>("/cad2cav/landmark", 1);
+  ROS_INFO("Landmarks published to topic /cad2cav/landmark");
 
   initCameraParams();
   ROS_INFO("Camera params initialized");
