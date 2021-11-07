@@ -37,6 +37,7 @@ catkin_init_workspace
 cd src
 git clone https://github.com/shineyruan/cad2cav_onboard.git
 git clone https://github.com/f1tenth/f1tenth_system.git
+git clone --recursive https://github.com/shineyruan/cad2cav_common.git
 cd ..
 ```
 
