@@ -11,6 +11,7 @@
 #include <memory>
 #include <opencv2/highgui/highgui.hpp>
 
+#include "cad2cav_msgs/LandmarkDetectionList.h"
 #include "cad2cav_types/camera.hpp"
 #include "cartographer_ros_msgs/LandmarkList.h"
 #include "object_detection/apriltag_detector.hpp"
@@ -47,6 +48,9 @@ public:
                        const ros::Time& msg_stamp) const;
   void publishLandmark(const std::vector<apriltag::TagInfo>& tag_list,
                        const ros::Time& msg_stamp) const;
+  void publishLandmarkToCartographer(
+      const std::vector<apriltag::TagInfo>& tag_list,
+      const ros::Time& msg_stamp) const;
 
   void imageReceiveCallback(const sensor_msgs::ImageConstPtr& msg);
 
@@ -66,10 +70,7 @@ private:
   ros::Publisher landmark_pub_;
 
   std::string camera_params_path_;
-  Eigen::Matrix3d camera_intrinsic_;
-  Eigen::RowVectorXd camera_distortion_coeff_;
-  Eigen::Matrix3d camera_extrinsic_rot_;
-  Eigen::Vector3d camera_extrinsic_trans_;
+  cad2cav::Camera camera_;
 
   cv::Mat current_frame_;
   std::unique_ptr<ObjectDetector> object_detector_;
