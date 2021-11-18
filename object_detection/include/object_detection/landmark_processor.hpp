@@ -24,16 +24,19 @@ namespace object_detection {
 class LandmarkProcessor {
 public:
   LandmarkProcessor(std::string tag_family = "TagStandard41h12",
-                    double tag_size        = 0.01495);
+                    double tag_size        = 0.01495,
+                    bool use_tag = false);
   LandmarkProcessor(const std::string model_path, const std::string config_path,
                     DNNType dnn_type, DatasetType dataset_type,
                     std::string tag_family = "TagStandard41h12",
-                    double tag_size        = 0.01495);
+                    double tag_size        = 0.01495,
+                    bool use_tag = false);
   LandmarkProcessor(const std::string model_path, const std::string config_path,
                     DNNType dnn_type, DatasetType dataset_type,
                     std::string camera_calibration_params_path,
                     std::string tag_family = "TagStandard41h12",
-                    double tag_size        = 0.01495);
+                    double tag_size        = 0.01495,
+                    bool use_tag = false);
 
   cv::Mat getFrame() const { return current_frame_; }
 
@@ -43,16 +46,23 @@ public:
     cv::imshow("received image message", frame);
     cv::waitKey(1);
   }
+  void visualize(const cv::Mat& frame,
+      const std::vector<BoundingBox>& bbox_list);
 
+  // Publisher for general object detection.
   void publishLandmark(const std::vector<BoundingBox>& bbox_list,
                        const ros::Time& msg_stamp) const;
+  // Publisher for apriltag detection.
   void publishLandmark(const std::vector<apriltag::TagInfo>& tag_list,
                        const ros::Time& msg_stamp) const;
   void publishLandmarkToCartographer(
       const std::vector<apriltag::TagInfo>& tag_list,
       const ros::Time& msg_stamp) const;
 
+  // Callback function for general object detection.
   void imageReceiveCallback(const sensor_msgs::ImageConstPtr& msg);
+  // Callback functino for apriltag detection.
+  void imageReceiveCallbackApriltag(const sensor_msgs::ImageConstPtr& msg);
 
 private:
   const std::string PACKAGE_DIR = ros::package::getPath("object_detection");
@@ -77,6 +87,7 @@ private:
   std::unique_ptr<AprilTagDetector> apriltag_detector_;
 
   void init();
+  void apriltagInit();
   void initCameraParams();
 };
 
