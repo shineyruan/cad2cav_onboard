@@ -176,6 +176,7 @@ add_library(apriltag_detector
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node node/object_detection_node.cpp)
+add_executable(apriltag_detection_node node/apriltag_detection_node.cpp)
 add_executable(video_recording_node node/video_recording_node.cpp)
 add_executable(image_publish_node node/image_publish_node.cpp)
 add_executable(camera_calibration_node node/camera_calibration_node.cpp)
@@ -215,6 +216,9 @@ target_link_libraries(apriltag_detector
   apriltag
 )
 target_link_libraries(${PROJECT_NAME}_node
+  landmark_processor
+)
+target_link_libraries(apriltag_detection_node
   landmark_processor
 )
 target_link_libraries(video_recording_node
@@ -262,6 +266,7 @@ target_link_libraries(apriltag_detector_test
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 install(TARGETS
   ${PROJECT_NAME}_node
+  apriltag_detection_node
   video_recording_node
   image_publish_node
   camera_calibration_node
