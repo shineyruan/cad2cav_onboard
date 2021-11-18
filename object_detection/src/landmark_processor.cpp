@@ -3,9 +3,22 @@
 namespace object_detection {
 
 void LandmarkProcessor::init() {
-  img_sub_ = it_.subscribe("/camera/image_raw", 1,
-                           &LandmarkProcessor::imageReceiveCallback, this);
-  ROS_WARN("Listening to topic /camera/image_raw for landmark processing...");
+  img_sub_ = it_.subscribe("camera/image_raw", 1,
+      &LandmarkProcessor::imageReceiveCallback, this);
+  ROS_WARN("Listening to topic /camera/image_raw for object detection...");
+
+  landmark_pub_ =
+      n_.advertise<cad2cav_msgs::LandmarkDetectionList>("/cad2cav/landmark", 1);
+  ROS_INFO("Landmarks published to topic /cad2cav/landmark");
+
+  initCameraParams();
+  ROS_INFO("Camera params initialized");
+}
+
+void LandmarkProcessor::apriltagInit() {
+  img_sub_ = it_.subscribe("camera/image_raw", 1,
+      &LandmarkProcessor::imageReceiveCallbackApriltag, this);
+  ROS_WARN("Listening to topic /camera/image_raw for apriltag detection...");
 
   landmark_pub_ =
       n_.advertise<cad2cav_msgs::LandmarkDetectionList>("/cad2cav/landmark", 1);
@@ -19,19 +32,23 @@ LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      const std::string config_path,
                                      DNNType dnn_type, DatasetType dataset_type,
                                      cv::String camera_calibration_params_path,
-                                     std::string tag_family, double tag_size)
+                                     std::string tag_family, double tag_size,
+                                     bool use_tag)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(camera_calibration_params_path),
       current_frame_() {
   object_detector_ = std::make_unique<ObjectDetector>(
       model_path, dnn_type, dataset_type, config_path);
-  init();
-  apriltag_detector_ = std::make_unique<AprilTagDetector>(
+  if (use_tag) {
+    apriltagInit();
+    apriltag_detector_ = std::make_unique<AprilTagDetector>(
       tag_family, tag_size, camera_.getInfo().intrinsic_);
+  }
+  else { init(); }
 }
 
-LandmarkProcessor::LandmarkProcessor(std::string tag_family, double tag_size)
+LandmarkProcessor::LandmarkProcessor(std::string tag_family, double tag_size, bool use_tag)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
@@ -39,24 +56,31 @@ LandmarkProcessor::LandmarkProcessor(std::string tag_family, double tag_size)
   object_detector_ =
       std::make_unique<ObjectDetector>(DEFAULT_MODEL_PATH, DNNType::DARKNET,
                                        DatasetType::COCO, DEFAULT_CONFIG_PATH);
-  init();
-  apriltag_detector_ = std::make_unique<AprilTagDetector>(
+  if (use_tag) {
+    apriltagInit();
+    apriltag_detector_ = std::make_unique<AprilTagDetector>(
       tag_family, tag_size, camera_.getInfo().intrinsic_);
+  }
+  else { init(); }
 }
 
 LandmarkProcessor::LandmarkProcessor(const std::string model_path,
                                      const std::string config_path,
                                      DNNType dnn_type, DatasetType dataset_type,
-                                     std::string tag_family, double tag_size)
+                                     std::string tag_family, double tag_size,
+                                     bool use_tag)
     : n_(ros::NodeHandle()),
       it_(n_),
       camera_params_path_(DEFAULT_CAM_PARAM_PATH),
       current_frame_() {
   object_detector_ = std::make_unique<ObjectDetector>(
       model_path, dnn_type, dataset_type, config_path);
-  init();
-  apriltag_detector_ = std::make_unique<AprilTagDetector>(
+  if (use_tag) {
+    apriltagInit();
+    apriltag_detector_ = std::make_unique<AprilTagDetector>(
       tag_family, tag_size, camera_.getInfo().intrinsic_);
+  }
+  else { init(); }
 }
 
 void LandmarkProcessor::publishLandmark(
@@ -153,7 +177,31 @@ void LandmarkProcessor::imageReceiveCallback(
   // update frame
   updateFrame(frame);
 
-  // visualize bounding box
+  // visualize detection result.
+  const auto detection_results = object_detector_->infer(current_frame_);
+  visualize(current_frame_, detection_results);
+
+  // publish landmark to Cartographer SLAM
+  publishLandmark(detection_results, msg->header.stamp);
+}
+
+void LandmarkProcessor::imageReceiveCallbackApriltag(
+    const sensor_msgs::ImageConstPtr& msg) {
+  cv::Mat frame;
+  try {
+    frame = cv_bridge::toCvShare(msg, "bgr8")->image;
+  } catch (const cv_bridge::Exception& e) {
+    ROS_ERROR("Could not convert from '%s' to 'bgr8'.", msg->encoding.c_str());
+  } catch (const std::exception& e) {
+    ROS_ERROR("%s", e.what());
+  }
+
+  if (frame.empty()) return;
+
+  // update frame
+  updateFrame(frame);
+
+  // visualize detection result.
   const auto detection_results = apriltag_detector_->detect(current_frame_);
   visualize(AprilTagDetector::visualizeTags(detection_results, current_frame_));
 
@@ -206,6 +254,16 @@ void LandmarkProcessor::initCameraParams() {
                   << camera_info.extrinsic_ << "\n");
 
   camera_.setInfo(camera_info);
+}
+
+void LandmarkProcessor::visualize(const cv::Mat& frame,
+    const std::vector<BoundingBox>& bbox_list) {
+  for (const auto& bbox : bbox_list) {
+    cv::putText(frame, bbox.class_name, cv::Point(bbox.left, bbox.top),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255), 2);
+    cv::rectangle(frame, bbox.getRect(), cv::Scalar(0, 0, 255));
+  }
+  visualize(frame);
 }
 
 }  // namespace object_detection
