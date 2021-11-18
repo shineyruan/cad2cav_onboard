@@ -1,0 +1,5 @@
+<launch>
+    <node name="apriltag_detection_node"
+        pkg="object_detection"
+        type="apriltag_detection_node"/>
+</launch>
