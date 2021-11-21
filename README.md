@@ -27,6 +27,7 @@ sudo ./Install_OpenCV-4-5-1.sh
 ***Note.* It might take ~2 hrs to fully install OpenCV 4.5.1 on the device.**
 
 Then install other dependencies manually, by either building from source or following the official documentation.
+
 ## Installation
 The entire process is ready for installation on an F1/10 Autonomous Racing Car, which uses an **Nvidia Jetson Xavier** Board. Users must also install the system-level drivers for F1/10 cars from [this repository.](https://github.com/f1tenth/f1tenth_system.git)
 
@@ -45,6 +46,14 @@ To build the project on the car (ROS Melodic), **you have to manually specify Py
 ```bash
 catkin_make_isolated --use-ninja -DPYTHON_EXECUTABLE=/usr/bin/python3 -DPYTHON_INCLUDE_DIR=/usr/include/python3.6m -DPYTHON_LIBRARY=/usr/lib/aarch64-linux-gnu/libpython3.6m.so
 source devel_isolated/setup.bash
+```
+
+### Optional Dependencies
+For object detection with YOLO in darknet architecture, one could also experiment with [Shumin326/darknet_ros](https://github.com/Shumin326/darknet_ros). The package has been adapted from the upstream repo and is verified to run successfully on the F1Tenth car.
+```bash
+cd ~/catkin_ws/src
+git clone --recursive https://github.com/Shumin326/darknet_ros
+cd ..
 ```
 
 ## Usage
